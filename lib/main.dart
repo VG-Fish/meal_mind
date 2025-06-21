@@ -12,6 +12,7 @@ class MealMind extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "MealMind",
       theme: ThemeData(
         brightness: Brightness.light,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -19,6 +20,7 @@ class MealMind extends StatelessWidget {
           unselectedItemColor: Colors.grey,
           backgroundColor: Colors.white,
         ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
       home: MainScreen(),
     );
