@@ -24,15 +24,23 @@ class RecipesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            "Recipe Library",
-            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Recipe Library",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                ),
+              ),
+              RecipeSearchBar(onSubmit: searchRecipe),
+            ],
           ),
-          RecipeSearchBar(onSubmit: searchRecipe),
-        ],
+        ),
       ),
     );
   }
