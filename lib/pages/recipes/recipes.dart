@@ -19,6 +19,11 @@ class RecipesPage extends StatelessWidget {
       return;
     }
     Map<String, dynamic> data = jsonDecode(response.body);
+
+    if (data["meals"] == null) {
+      print("No meals found");
+      return;
+    }
     print(data);
   }
 
@@ -27,17 +32,39 @@ class RecipesPage extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        body: Center(
+        body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   "Recipe Library",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
                 ),
               ),
-              RecipeSearchBar(onSubmit: searchRecipe),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RecipeSearchBar(onSubmit: searchRecipe),
+              ),
+              const TabBar(
+                labelColor: Colors.blue,
+                unselectedLabelColor: Colors.grey,
+                tabs: [
+                  Tab(text: "All Recipes"),
+                  Tab(text: "Favorites"),
+                  Tab(text: "History"),
+                ],
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    Center(child: Text("All Recipes")),
+                    Center(child: Text("Favorites")),
+                    Center(child: Text("History")),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
