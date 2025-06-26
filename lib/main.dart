@@ -22,7 +22,7 @@ class MealMind extends StatelessWidget {
         ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
-      home: MainScreen(),
+      home: MainNavigation(),
     );
   }
 }

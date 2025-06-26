@@ -5,8 +5,41 @@ import '../components/recipe_search_bar.dart';
 
 import 'dart:convert';
 
-class RecipesPage extends StatelessWidget {
-  const RecipesPage({super.key});
+class RecipesPage extends StatefulWidget {
+  @override
+  State<RecipesPage> createState() => _RecipesPage();
+}
+
+class _RecipesPage extends State<RecipesPage> {
+  List<String> categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (categories.isEmpty) {
+      _loadCategories();
+    }
+  }
+
+  Future<void> _loadCategories() async {
+    var response = await http.get(
+      Uri.parse('https://www.themealdb.com/api/json/v1/1/categories.php'),
+    );
+
+    if (response.statusCode != 200) {
+      print("Error getting categories.");
+      return;
+    }
+
+    Map<String, dynamic> data = jsonDecode(response.body);
+
+    setState(() {
+      categories = List<String>.from(
+        data["categories"].map((cat) => cat["strCategory"]),
+      );
+      categories.insert(0, "All");
+    });
+  }
 
   Future<void> searchRecipe(String recipe) async {
     recipe = recipe.replaceAll(" ", "%20");
@@ -59,8 +92,41 @@ class RecipesPage extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    Center(child: Text("All Recipes")),
+                    // All Recipes tab
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.all(8),
+                        child: Row(
+                          children: [
+                            for (var category in categories)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    print(category);
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all(
+                                      Colors.deepPurple,
+                                    ),
+                                    foregroundColor: WidgetStateProperty.all(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                  child: Text(category),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Favorites tab
                     Center(child: Text("Favorites")),
+
+                    // History tab
                     Center(child: Text("History")),
                   ],
                 ),
