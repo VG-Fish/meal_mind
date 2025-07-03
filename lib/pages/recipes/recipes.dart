@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../components/recipe_search_bar.dart';
+import 'components/recipe_tab.dart';
 
 import 'dart:convert';
 
 class RecipesPage extends StatefulWidget {
+  const RecipesPage({super.key});
+
   @override
   State<RecipesPage> createState() => _RecipesPage();
 }
@@ -95,31 +98,51 @@ class _RecipesPage extends State<RecipesPage> {
                     // All Recipes tab
                     Align(
                       alignment: Alignment.topLeft,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.all(8),
-                        child: Row(
-                          children: [
-                            for (var category in categories)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    print(category);
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStateProperty.all(
-                                      Colors.deepPurple,
-                                    ),
-                                    foregroundColor: WidgetStateProperty.all(
-                                      Colors.white,
+                      child: Column(
+                        children: [
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.all(8),
+                            child: Row(
+                              children: [
+                                for (var category in categories)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: ElevatedButton(
+                                      onPressed: () {},
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                              Colors.deepPurple,
+                                            ),
+                                        foregroundColor:
+                                            WidgetStateProperty.all(
+                                              Colors.white,
+                                            ),
+                                      ),
+                                      child: Text(category),
                                     ),
                                   ),
-                                  child: Text(category),
-                                ),
-                              ),
-                          ],
-                        ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: GridView.count(
+                              crossAxisCount: 2,
+                              padding: const EdgeInsets.all(8),
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              children: List.generate(4, (index) {
+                                return RecipeTab(
+                                  name: "D",
+                                  imageLink:
+                                      "https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg",
+                                  onTap: () {},
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
