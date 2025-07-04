@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 
 import 'components/recipe_search_bar.dart';
 import 'components/recipe_tabs.dart';
+import '../components/copyable_text_widget.dart';
 
 import 'dart:convert';
 
@@ -15,6 +16,7 @@ class RecipesPage extends StatefulWidget {
 
 class _RecipesPage extends State<RecipesPage> {
   List<String> categories = [];
+  List<String> history = [];
   String currentCategory = '';
 
   @override
@@ -50,6 +52,10 @@ class _RecipesPage extends State<RecipesPage> {
   }
 
   Future<void> searchRecipe(String recipe) async {
+    setState(() {
+      history.add(recipe);
+    });
+
     recipe = recipe.replaceAll(" ", "%20");
     var response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?s=$recipe'),
@@ -151,7 +157,18 @@ class _RecipesPage extends State<RecipesPage> {
                     Center(child: Text("Favorites")),
 
                     // History tab
-                    Center(child: Text("History")),
+                    Column(
+                      children: [
+                        for (var recipe in history)
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            color: const Color.fromARGB(255, 178, 223, 245),
+                            child: CopyableTextWidget(text: recipe),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
