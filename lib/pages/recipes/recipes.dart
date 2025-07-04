@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../components/recipe_search_bar.dart';
+import 'components/recipe_search_bar.dart';
 import 'components/recipe_tabs.dart';
 
 import 'dart:convert';
@@ -137,6 +137,7 @@ class _RecipesPage extends State<RecipesPage> {
                           ),
                           Expanded(
                             child: RecipeTabs(
+                              key: ValueKey(currentCategory),
                               category: currentCategory,
                               amount: 9,
                               onTap: () {},

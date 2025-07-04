@@ -35,10 +35,44 @@ class _RecipeTabsState extends State<RecipeTabs> {
     if (widget.category != "All") {
       _getRecipesFromCategory(widget.category);
     } else {
+      _getRandomMeals();
+    }
+  }
+
+  Future<void> _getRandomMeals() async {
+    if (_recipesCache.containsKey("All")) {
+      recipes = _recipesCache["All"]!;
       setState(() {
         isLoading = false;
       });
+      return;
     }
+
+    for (int i = 0; i < widget.amount; i++) {
+      final response = await http.get(
+        Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'),
+      );
+
+      if (response.statusCode != 200) {
+        print("Error getting categories.");
+        continue;
+      }
+
+      final data = jsonDecode(response.body);
+      final meal = data["meals"][0] as Map<String, dynamic>?;
+
+      if (meal != null) {
+        recipes.add({
+          "recipeName": meal["strMeal"],
+          "recipeImageLink": meal["strMealThumb"],
+        });
+      }
+    }
+    _recipesCache["All"] = recipes;
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> _getRecipesFromCategory(String category) async {
