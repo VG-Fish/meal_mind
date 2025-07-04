@@ -157,18 +157,25 @@ class _RecipesPage extends State<RecipesPage> {
                     Center(child: Text("Favorites")),
 
                     // History tab
-                    Column(
-                      children: [
-                        for (var recipe in history)
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            color: const Color.fromARGB(255, 178, 223, 245),
-                            child: CopyableTextWidget(text: recipe),
+                    history.isEmpty
+                        ? Center(child: Text("Favorites"))
+                        : Column(
+                            children: [
+                              for (var recipe in history)
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  color: const Color.fromARGB(
+                                    255,
+                                    178,
+                                    223,
+                                    245,
+                                  ),
+                                  child: CopyableTextWidget(text: recipe),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
                   ],
                 ),
               ),
