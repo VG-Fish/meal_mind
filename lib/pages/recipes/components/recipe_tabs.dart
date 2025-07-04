@@ -42,9 +42,12 @@ class _RecipeTabsState extends State<RecipeTabs> {
   Future<void> _getRandomMeals() async {
     if (_recipesCache.containsKey("All")) {
       recipes = _recipesCache["All"]!;
+      // This is to check if the widget hasn't been disposed, if so, stop running this function
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
+
       return;
     }
 
@@ -70,6 +73,7 @@ class _RecipeTabsState extends State<RecipeTabs> {
     }
     _recipesCache["All"] = recipes;
 
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });
@@ -78,6 +82,7 @@ class _RecipeTabsState extends State<RecipeTabs> {
   Future<void> _getRecipesFromCategory(String category) async {
     if (_recipesCache.containsKey(category)) {
       recipes = _recipesCache[category]!;
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -92,9 +97,11 @@ class _RecipeTabsState extends State<RecipeTabs> {
 
     if (response.statusCode != 200) {
       print("Error getting categories.");
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
+
       return;
     }
 
@@ -112,6 +119,7 @@ class _RecipeTabsState extends State<RecipeTabs> {
       _recipesCache[category] = recipes;
     }
 
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });

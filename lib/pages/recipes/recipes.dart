@@ -158,7 +158,7 @@ class _RecipesPage extends State<RecipesPage> {
 
                     // History tab
                     history.isEmpty
-                        ? Center(child: Text("Favorites"))
+                        ? Center(child: Text("History"))
                         : Column(
                             children: [
                               for (var recipe in history)
