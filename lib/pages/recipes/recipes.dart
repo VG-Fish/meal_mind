@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../components/recipe_search_bar.dart';
-import 'components/recipe_tab.dart';
+import 'components/recipe_tabs.dart';
 
 import 'dart:convert';
 
@@ -15,6 +15,7 @@ class RecipesPage extends StatefulWidget {
 
 class _RecipesPage extends State<RecipesPage> {
   List<String> categories = [];
+  String currentCategory = '';
 
   @override
   void initState() {
@@ -41,6 +42,10 @@ class _RecipesPage extends State<RecipesPage> {
         data["categories"].map((cat) => cat["strCategory"]),
       );
       categories.insert(0, "All");
+
+      setState(() {
+        currentCategory = "All";
+      });
     });
   }
 
@@ -109,7 +114,11 @@ class _RecipesPage extends State<RecipesPage> {
                                   Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        setState(() {
+                                          currentCategory = category;
+                                        });
+                                      },
                                       style: ButtonStyle(
                                         backgroundColor:
                                             WidgetStateProperty.all(
@@ -127,19 +136,10 @@ class _RecipesPage extends State<RecipesPage> {
                             ),
                           ),
                           Expanded(
-                            child: GridView.count(
-                              crossAxisCount: 2,
-                              padding: const EdgeInsets.all(8),
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              children: List.generate(4, (index) {
-                                return RecipeTab(
-                                  name: "D",
-                                  imageLink:
-                                      "https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg",
-                                  onTap: () {},
-                                );
-                              }),
+                            child: RecipeTabs(
+                              category: currentCategory,
+                              amount: 9,
+                              onTap: () {},
                             ),
                           ),
                         ],
