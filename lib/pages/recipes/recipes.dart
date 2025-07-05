@@ -64,7 +64,6 @@ class RecipesPage extends StatelessWidget {
                                         category,
                                         9,
                                       ), // This call fetches X recipes
-                                      child: Text(category),
                                       style: ButtonStyle(
                                         backgroundColor:
                                             WidgetStateProperty.all(
@@ -75,6 +74,7 @@ class RecipesPage extends StatelessWidget {
                                               Colors.white,
                                             ),
                                       ),
+                                      child: Text(category),
                                     ),
                                   ),
                                 )
