@@ -4,18 +4,13 @@ class ListLocalStorage {
   Future<void> addValueToKey(String key, String value) async {
     final preferences = await SharedPreferences.getInstance();
     final existing = preferences.getStringList(key) ?? [];
-
-    // Avoid duplicates
-    existing.remove(value);
-    existing.insert(0, value);
-
+    existing.add(value);
     await preferences.setStringList(key, existing);
   }
 
   Future<void> removeValueFromKey(String key, String value) async {
     final preferences = await SharedPreferences.getInstance();
     final existing = preferences.getStringList(key) ?? [];
-
     existing.remove(value);
     await preferences.setStringList(key, existing);
   }
