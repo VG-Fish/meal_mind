@@ -14,8 +14,8 @@ class RecipeState extends ChangeNotifier {
   List<Recipe> currentRecipes = [];
   bool isLoading = false;
   String currentCategory = 'All';
-  final Map<String, List<Recipe>> _cache = {};
 
+  final Map<String, List<Recipe>> _cache = {};
   final storage = ListLocalStorage();
 
   RecipeState() {
@@ -42,7 +42,11 @@ class RecipeState extends ChangeNotifier {
       final data = jsonDecode(res.body);
       categories = ['All'];
       categories.addAll(
-        List<String>.from(data['categories'].map((c) => c['strCategory'])),
+        List<String>.from(
+          (data['categories'] as List).map(
+            (category) => category['strCategory'],
+          ),
+        ),
       );
       notifyListeners();
     }
