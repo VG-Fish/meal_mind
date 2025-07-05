@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:meal_mind/pages/recipes/components/recipe_search_bar.dart';
 import 'package:provider/provider.dart';
+
 import 'state/recipe_state.dart';
 import 'components/recipe_tabs.dart';
+import '../components/copyable_text_widget.dart';
 
 class RecipesPage extends StatelessWidget {
   const RecipesPage({super.key});
@@ -16,6 +19,7 @@ class RecipesPage extends StatelessWidget {
         body: SafeArea(
           child: Column(
             children: [
+              // Top Text
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
@@ -23,53 +27,93 @@ class RecipesPage extends StatelessWidget {
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
                 ),
               ),
+
+              // Search Bar
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  onSubmitted: (text) => state.addToHistory(text),
-                  decoration: const InputDecoration(hintText: 'Search...'),
+                child: RecipeSearchBar(
+                  onSubmit: (text) => state.addToHistory(text),
                 ),
               ),
-              TabBar(
+
+              const TabBar(
                 tabs: const [
                   Tab(text: "All Recipes"),
                   Tab(text: "Favorites"),
                   Tab(text: "History"),
                 ],
               ),
+
+              const Divider(height: 1),
+
               Expanded(
                 child: TabBarView(
                   children: [
                     Column(
                       children: [
+                        // Category Buttons
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: state.categories
                                 .map(
-                                  (cat) => Padding(
+                                  (category) => Padding(
                                     padding: const EdgeInsets.all(4),
                                     child: ElevatedButton(
-                                      onPressed: () =>
-                                          state.setCategory(cat, 9),
-                                      child: Text(cat),
+                                      onPressed: () => state.setCategory(
+                                        category,
+                                        9,
+                                      ), // This call fetches X recipes
+                                      child: Text(category),
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                              Colors.deepPurple,
+                                            ),
+                                        foregroundColor:
+                                            WidgetStateProperty.all(
+                                              Colors.white,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 )
                                 .toList(),
                           ),
                         ),
+
+                        // Recipe Cards
                         const Expanded(child: RecipeTabs()),
                       ],
                     ),
+
+                    // Favorites Tab
                     ListView(
-                      children: state.favorites
-                          .map((f) => ListTile(title: Text(f)))
+                      children: state.favorites.reversed
+                          .map(
+                            (favorite) => Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              color: const Color.fromARGB(255, 178, 223, 245),
+                              child: CopyableTextWidget(text: favorite),
+                            ),
+                          )
                           .toList(),
                     ),
+
+                    // History Tab
                     ListView(
-                      children: state.history
-                          .map((h) => ListTile(title: Text(h)))
+                      children: state.history.reversed
+                          .map(
+                            (history) => Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              color: const Color.fromARGB(255, 178, 223, 245),
+                              child: CopyableTextWidget(text: history),
+                            ),
+                          )
                           .toList(),
                     ),
                   ],

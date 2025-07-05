@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class RecipeSearchBar extends StatefulWidget {
   const RecipeSearchBar({super.key, required this.onSubmit});
 
-  final Future<void> Function(String recipe) onSubmit;
+  final void Function(String recipe) onSubmit;
 
   @override
   State<RecipeSearchBar> createState() => _RecipeSearchBarState();
