@@ -32,7 +32,9 @@ class RecipesPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: RecipeSearchBar(
-                  onSubmit: (text) => state.addToHistory(text),
+                  onSubmit: (recipe) {
+                    state.addToHistory(recipe);
+                  },
                 ),
               ),
 

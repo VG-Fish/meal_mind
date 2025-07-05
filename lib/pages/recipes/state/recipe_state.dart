@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/recipe.dart';
+import '../../../models/short_recipe.dart';
 import '../../../services/local_storage.dart';
 
 import 'package:http/http.dart' as http;
@@ -11,11 +11,13 @@ class RecipeState extends ChangeNotifier {
   List<String> favorites = [];
   List<String> history = [];
   List<String> categories = ['All'];
-  List<Recipe> currentRecipes = [];
+  List<ShortRecipe> currentRecipes = [];
+
+  ShortRecipe? selectedRecipe;
   bool isLoading = false;
   String currentCategory = 'All';
 
-  final Map<String, List<Recipe>> _cache = {};
+  final Map<String, List<ShortRecipe>> _cache = {};
   final storage = ListLocalStorage();
 
   RecipeState() {
@@ -61,7 +63,7 @@ class RecipeState extends ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-    List<Recipe> fetched = [];
+    List<ShortRecipe> fetched = [];
 
     if (currentCategory == "All") {
       for (int i = 0; i < amount; i++) {
@@ -71,7 +73,7 @@ class RecipeState extends ChangeNotifier {
         if (res.statusCode == 200) {
           final data = jsonDecode(res.body);
           final meal = data['meals'][0];
-          fetched.add(Recipe.fromJson(meal));
+          fetched.add(ShortRecipe.fromJson(meal));
         }
       }
     } else {
@@ -83,7 +85,9 @@ class RecipeState extends ChangeNotifier {
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         final meals = (data['meals'] as List).take(amount);
-        fetched = meals.map<Recipe>((meal) => Recipe.fromJson(meal)).toList();
+        fetched = meals
+            .map<ShortRecipe>((meal) => ShortRecipe.fromJson(meal))
+            .toList();
       }
     }
 
@@ -113,5 +117,10 @@ class RecipeState extends ChangeNotifier {
   void setCategory(String category, int amount) {
     currentCategory = category;
     fetchRecipes(amount);
+  }
+
+  void selectRecipe(ShortRecipe recipe) {
+    selectedRecipe = recipe;
+    notifyListeners();
   }
 }

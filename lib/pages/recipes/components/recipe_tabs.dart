@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../state/recipe_state.dart';
 
 import 'recipe_tab.dart';
+import '../../current/current.dart';
 
 class RecipeTabs extends StatelessWidget {
   const RecipeTabs({super.key});
@@ -29,7 +30,13 @@ class RecipeTabs extends StatelessWidget {
           name: recipe.name,
           imageUrl: recipe.imageUrl,
           isLiked: state.favorites.contains(recipe.name),
-          onTap: () {},
+          onTap: () {
+            state.selectRecipe(recipe);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CurrentPage()),
+            );
+          },
           onFavorite: () => state.toggleFavorite(recipe.name),
         );
       }).toList(),
