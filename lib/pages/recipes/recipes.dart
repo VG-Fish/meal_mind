@@ -88,34 +88,48 @@ class RecipesPage extends StatelessWidget {
                     ),
 
                     // Favorites Tab
-                    ListView(
-                      children: state.favorites.reversed
-                          .map(
-                            (favorite) => Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              color: const Color.fromARGB(255, 178, 223, 245),
-                              child: CopyableTextWidget(text: favorite),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    state.favorites.isEmpty
+                        ? Center(child: Text("No Favorites"))
+                        : ListView(
+                            children: state.favorites.reversed
+                                .map(
+                                  (favorite) => Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      178,
+                                      223,
+                                      245,
+                                    ),
+                                    child: CopyableTextWidget(text: favorite),
+                                  ),
+                                )
+                                .toList(),
+                          ),
 
                     // History Tab
-                    ListView(
-                      children: state.history.reversed
-                          .map(
-                            (history) => Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              color: const Color.fromARGB(255, 178, 223, 245),
-                              child: CopyableTextWidget(text: history),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    state.history.isEmpty
+                        ? Center(child: Text("No History"))
+                        : ListView(
+                            children: state.history.reversed
+                                .map(
+                                  (history) => Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      178,
+                                      223,
+                                      245,
+                                    ),
+                                    child: CopyableTextWidget(text: history),
+                                  ),
+                                )
+                                .toList(),
+                          ),
                   ],
                 ),
               ),
