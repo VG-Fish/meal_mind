@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'components/recipe_search_bar.dart';
 import 'components/recipe_tabs.dart';
 import '../components/copyable_text_widget.dart';
+import '../components/local_storage.dart';
 
 import 'dart:convert';
 
@@ -16,7 +17,8 @@ class RecipesPage extends StatefulWidget {
 
 class _RecipesPage extends State<RecipesPage> {
   List<String> categories = [];
-  List<String> history = [];
+  List<String> _history = [];
+  final _historyService = ListLocalStorage();
   String currentCategory = '';
 
   @override
@@ -25,6 +27,14 @@ class _RecipesPage extends State<RecipesPage> {
     if (categories.isEmpty) {
       _loadCategories();
     }
+    _loadHistory();
+  }
+
+  void _loadHistory() async {
+    final history = await _historyService.getKey('search_history');
+    setState(() {
+      _history = history;
+    });
   }
 
   Future<void> _loadCategories() async {
@@ -53,8 +63,9 @@ class _RecipesPage extends State<RecipesPage> {
 
   Future<void> searchRecipe(String recipe) async {
     setState(() {
-      history.add(recipe);
+      _history.add(recipe);
     });
+    await _historyService.addValueToKey('search_history', recipe);
 
     recipe = recipe.replaceAll(" ", "%20");
     var response = await http.get(
@@ -157,11 +168,11 @@ class _RecipesPage extends State<RecipesPage> {
                     Center(child: Text("Favorites")),
 
                     // History tab
-                    history.isEmpty
+                    _history.isEmpty
                         ? Center(child: Text("History"))
                         : Column(
                             children: [
-                              for (var recipe in history)
+                              for (var recipe in _history)
                                 Card(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
