@@ -1,21 +1,37 @@
 import 'package:flutter/material.dart';
 
-class RecipeTab extends StatelessWidget {
+class RecipeTab extends StatefulWidget {
   final String name;
   final String imageLink;
   final VoidCallback onTap;
+  final VoidCallback onFavorite;
 
   const RecipeTab({
     super.key,
     required this.name,
     required this.imageLink,
     required this.onTap,
+    required this.onFavorite,
   });
+
+  @override
+  State<RecipeTab> createState() => _RecipeTabState();
+}
+
+class _RecipeTabState extends State<RecipeTab> {
+  bool _isLiked = false;
+
+  void _toggleLike() {
+    setState(() {
+      _isLiked = !_isLiked;
+    });
+    widget.onFavorite();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
@@ -26,7 +42,7 @@ class RecipeTab extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Image.network(
-                imageLink,
+                widget.imageLink,
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -41,13 +57,27 @@ class RecipeTab extends StatelessWidget {
                 color: Colors.black.withValues(alpha: 0.5),
                 padding: EdgeInsets.all(8),
                 child: Text(
-                  name,
-                  style: TextStyle(
+                  widget.name,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Card(
+                shape: const CircleBorder(),
+                child: IconButton(
+                  onPressed: _toggleLike,
+                  icon: Icon(
+                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: _isLiked ? Colors.red : null,
+                  ),
                 ),
               ),
             ),

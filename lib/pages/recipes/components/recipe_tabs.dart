@@ -11,12 +11,14 @@ class RecipeTabs extends StatefulWidget {
   final String category;
   final int amount;
   final VoidCallback onTap;
+  final Future<void> Function(String recipeName) onFavorite;
 
   const RecipeTabs({
     super.key,
     required this.category,
     required this.amount,
     required this.onTap,
+    required this.onFavorite,
   });
 
   @override
@@ -143,6 +145,9 @@ class _RecipeTabsState extends State<RecipeTabs> {
           name: recipe["recipeName"]!,
           imageLink: recipe["recipeImageLink"]!,
           onTap: widget.onTap,
+          onFavorite: () {
+            widget.onFavorite(recipe["recipeName"]!);
+          },
         );
       }).toList(),
     );

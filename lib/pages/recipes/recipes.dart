@@ -18,6 +18,7 @@ class RecipesPage extends StatefulWidget {
 class _RecipesPage extends State<RecipesPage> {
   List<String> categories = [];
   List<String> _history = [];
+  List<String> _favorites = [];
   final _historyService = ListLocalStorage();
   String currentCategory = '';
 
@@ -31,9 +32,11 @@ class _RecipesPage extends State<RecipesPage> {
   }
 
   void _loadHistory() async {
-    final history = await _historyService.getKey('search_history');
+    final history = await _historyService.getKey("search_history");
+    final favorites = await _historyService.getKey("favorites");
     setState(() {
       _history = history;
+      _favorites = favorites;
     });
   }
 
@@ -83,6 +86,16 @@ class _RecipesPage extends State<RecipesPage> {
       return;
     }
     print(data);
+  }
+
+  Future<void> _changeLikedItemStatus(String recipeName) async {
+    setState(() {
+      if (_favorites.contains(recipeName)) {
+        _favorites.remove(recipeName);
+      } else {
+        _favorites.add(recipeName);
+      }
+    });
   }
 
   @override
@@ -158,6 +171,7 @@ class _RecipesPage extends State<RecipesPage> {
                               category: currentCategory,
                               amount: 9,
                               onTap: () {},
+                              onFavorite: _changeLikedItemStatus,
                             ),
                           ),
                         ],
@@ -165,7 +179,25 @@ class _RecipesPage extends State<RecipesPage> {
                     ),
 
                     // Favorites tab
-                    Center(child: Text("Favorites")),
+                    _favorites.isEmpty
+                        ? Center(child: Text("Favorites"))
+                        : Column(
+                            children: [
+                              for (var favorite in _favorites)
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  color: const Color.fromARGB(
+                                    255,
+                                    178,
+                                    223,
+                                    245,
+                                  ),
+                                  child: CopyableTextWidget(text: favorite),
+                                ),
+                            ],
+                          ),
 
                     // History tab
                     _history.isEmpty
