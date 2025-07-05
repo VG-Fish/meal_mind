@@ -28,10 +28,10 @@ class _RecipesPage extends State<RecipesPage> {
     if (categories.isEmpty) {
       _loadCategories();
     }
-    _loadHistory();
+    _loadLocalStorgae();
   }
 
-  void _loadHistory() async {
+  void _loadLocalStorgae() async {
     final history = await _historyService.getKey("search_history");
     final favorites = await _historyService.getKey("favorites");
     setState(() {
@@ -96,6 +96,12 @@ class _RecipesPage extends State<RecipesPage> {
         _favorites.add(recipeName);
       }
     });
+
+    if (_favorites.contains(recipeName)) {
+      await _historyService.addValueToKey('favorites', recipeName);
+    } else {
+      await _historyService.removeValueFromKey('favorites', recipeName);
+    }
   }
 
   @override
@@ -172,6 +178,7 @@ class _RecipesPage extends State<RecipesPage> {
                               amount: 9,
                               onTap: () {},
                               onFavorite: _changeLikedItemStatus,
+                              favorites: _favorites,
                             ),
                           ),
                         ],
@@ -183,7 +190,7 @@ class _RecipesPage extends State<RecipesPage> {
                         ? Center(child: Text("Favorites"))
                         : Column(
                             children: [
-                              for (var favorite in _favorites)
+                              for (var favorite in _favorites.reversed)
                                 Card(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),

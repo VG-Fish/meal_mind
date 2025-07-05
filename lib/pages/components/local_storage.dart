@@ -1,12 +1,23 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListLocalStorage {
-  Future<void> addValueToKey(String key, String term) async {
+  Future<void> addValueToKey(String key, String value) async {
     final preferences = await SharedPreferences.getInstance();
+    final existing = preferences.getStringList(key) ?? [];
 
-    final history = preferences.getStringList(key) ?? [];
-    history.add(term);
-    await preferences.setStringList(key, history);
+    // Avoid duplicates
+    existing.remove(value);
+    existing.insert(0, value);
+
+    await preferences.setStringList(key, existing);
+  }
+
+  Future<void> removeValueFromKey(String key, String value) async {
+    final preferences = await SharedPreferences.getInstance();
+    final existing = preferences.getStringList(key) ?? [];
+
+    existing.remove(value);
+    await preferences.setStringList(key, existing);
   }
 
   Future<List<String>> getKey(String key) async {

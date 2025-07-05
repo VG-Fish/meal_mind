@@ -12,6 +12,7 @@ class RecipeTabs extends StatefulWidget {
   final int amount;
   final VoidCallback onTap;
   final Future<void> Function(String recipeName) onFavorite;
+  final List<String> favorites;
 
   const RecipeTabs({
     super.key,
@@ -19,6 +20,7 @@ class RecipeTabs extends StatefulWidget {
     required this.amount,
     required this.onTap,
     required this.onFavorite,
+    required this.favorites,
   });
 
   @override
@@ -141,13 +143,15 @@ class _RecipeTabsState extends State<RecipeTabs> {
       crossAxisSpacing: 8,
       mainAxisSpacing: 8,
       children: recipes.map((recipe) {
+        String recipeName = recipe["recipeName"]!;
         return RecipeTab(
-          name: recipe["recipeName"]!,
+          name: recipeName,
           imageLink: recipe["recipeImageLink"]!,
           onTap: widget.onTap,
           onFavorite: () {
-            widget.onFavorite(recipe["recipeName"]!);
+            widget.onFavorite(recipeName);
           },
+          isInitiallyLiked: widget.favorites.contains(recipeName),
         );
       }).toList(),
     );

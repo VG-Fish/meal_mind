@@ -5,6 +5,7 @@ class RecipeTab extends StatefulWidget {
   final String imageLink;
   final VoidCallback onTap;
   final VoidCallback onFavorite;
+  final bool isInitiallyLiked;
 
   const RecipeTab({
     super.key,
@@ -12,6 +13,7 @@ class RecipeTab extends StatefulWidget {
     required this.imageLink,
     required this.onTap,
     required this.onFavorite,
+    required this.isInitiallyLiked,
   });
 
   @override
@@ -19,7 +21,13 @@ class RecipeTab extends StatefulWidget {
 }
 
 class _RecipeTabState extends State<RecipeTab> {
-  bool _isLiked = false;
+  late bool _isLiked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLiked = widget.isInitiallyLiked;
+  }
 
   void _toggleLike() {
     setState(() {
@@ -54,8 +62,8 @@ class _RecipeTabState extends State<RecipeTab> {
               bottom: 0,
               child: Container(
                 width: double.infinity,
-                color: Colors.black.withValues(alpha: 0.5),
-                padding: EdgeInsets.all(8),
+                color: Colors.black.withOpacity(0.5),
+                padding: const EdgeInsets.all(8),
                 child: Text(
                   widget.name,
                   style: const TextStyle(
