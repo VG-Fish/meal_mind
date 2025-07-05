@@ -28,10 +28,10 @@ class _RecipesPage extends State<RecipesPage> {
     if (categories.isEmpty) {
       _loadCategories();
     }
-    _loadLocalStorgae();
+    _loadLocalStorage();
   }
 
-  void _loadLocalStorgae() async {
+  void _loadLocalStorage() async {
     final history = await _historyService.getKey("search_history");
     final favorites = await _historyService.getKey("favorites");
     setState(() {
