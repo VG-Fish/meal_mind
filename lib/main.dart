@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'pages/components/main_screen.dart';
+import 'pages/recipes/state/recipe_state.dart';
 
 void main() {
   runApp(const MealMind());
@@ -11,19 +13,22 @@ class MealMind extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "MealMind",
-      theme: ThemeData(
-        brightness: Brightness.light,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
-          backgroundColor: Colors.white,
+    return ChangeNotifierProvider(
+      create: (_) => RecipeState(),
+      child: MaterialApp(
+        title: "MealMind",
+        theme: ThemeData(
+          brightness: Brightness.light,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.white,
+          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+        // showPerformanceOverlay: true,
+        home: MainNavigation(),
       ),
-      // showPerformanceOverlay: true,
-      home: MainNavigation(),
     );
   }
 }

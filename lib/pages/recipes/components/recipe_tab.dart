@@ -1,45 +1,25 @@
 import 'package:flutter/material.dart';
 
-class RecipeTab extends StatefulWidget {
+class RecipeTab extends StatelessWidget {
   final String name;
-  final String imageLink;
+  final String imageUrl;
+  final bool isLiked;
   final VoidCallback onTap;
   final VoidCallback onFavorite;
-  final bool isInitiallyLiked;
 
   const RecipeTab({
     super.key,
     required this.name,
-    required this.imageLink,
+    required this.imageUrl,
+    required this.isLiked,
     required this.onTap,
     required this.onFavorite,
-    required this.isInitiallyLiked,
   });
-
-  @override
-  State<RecipeTab> createState() => _RecipeTabState();
-}
-
-class _RecipeTabState extends State<RecipeTab> {
-  late bool _isLiked;
-
-  @override
-  void initState() {
-    super.initState();
-    _isLiked = widget.isInitiallyLiked;
-  }
-
-  void _toggleLike() {
-    setState(() {
-      _isLiked = !_isLiked;
-    });
-    widget.onFavorite();
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
@@ -48,24 +28,16 @@ class _RecipeTabState extends State<RecipeTab> {
           alignment: Alignment.bottomLeft,
           fit: StackFit.expand,
           children: [
-            Positioned.fill(
-              child: Image.network(
-                widget.imageLink,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
+            Positioned.fill(child: Image.network(imageUrl, fit: BoxFit.cover)),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
-                width: double.infinity,
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 padding: const EdgeInsets.all(8),
                 child: Text(
-                  widget.name,
+                  name,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -81,10 +53,10 @@ class _RecipeTabState extends State<RecipeTab> {
               child: Card(
                 shape: const CircleBorder(),
                 child: IconButton(
-                  onPressed: _toggleLike,
+                  onPressed: onFavorite,
                   icon: Icon(
-                    _isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: _isLiked ? Colors.red : null,
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? Colors.red : null,
                   ),
                 ),
               ),

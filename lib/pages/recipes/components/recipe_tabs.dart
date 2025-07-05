@@ -1,157 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../state/recipe_state.dart';
 
 import 'recipe_tab.dart';
 
-import 'package:http/http.dart' as http;
-
-import 'dart:math';
-import 'dart:convert';
-
-class RecipeTabs extends StatefulWidget {
-  final String category;
-  final int amount;
-  final VoidCallback onTap;
-  final Future<void> Function(String recipeName) onFavorite;
-  final List<String> favorites;
-
-  const RecipeTabs({
-    super.key,
-    required this.category,
-    required this.amount,
-    required this.onTap,
-    required this.onFavorite,
-    required this.favorites,
-  });
-
-  @override
-  State<RecipeTabs> createState() => _RecipeTabsState();
-}
-
-class _RecipeTabsState extends State<RecipeTabs> {
-  static final Map<String, List<Map<String, String>>> _recipesCache = {};
-  List<Map<String, String>> recipes = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.category != "All") {
-      _getRecipesFromCategory(widget.category);
-    } else {
-      _getRandomMeals();
-    }
-  }
-
-  Future<void> _getRandomMeals() async {
-    if (_recipesCache.containsKey("All")) {
-      recipes = _recipesCache["All"]!;
-      // This is to check if the widget hasn't been disposed, if so, stop running this function
-      if (!mounted) return;
-      setState(() {
-        isLoading = false;
-      });
-
-      return;
-    }
-
-    for (int i = 0; i < widget.amount; i++) {
-      final response = await http.get(
-        Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'),
-      );
-
-      if (response.statusCode != 200) {
-        print("Error getting categories.");
-        continue;
-      }
-
-      final data = jsonDecode(response.body);
-      final meal = data["meals"][0] as Map<String, dynamic>?;
-
-      if (meal != null) {
-        recipes.add({
-          "recipeName": meal["strMeal"],
-          "recipeImageLink": meal["strMealThumb"],
-        });
-      }
-    }
-    _recipesCache["All"] = recipes;
-
-    if (!mounted) return;
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<void> _getRecipesFromCategory(String category) async {
-    if (_recipesCache.containsKey(category)) {
-      recipes = _recipesCache[category]!;
-      if (!mounted) return;
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    final response = await http.get(
-      Uri.parse(
-        'https://www.themealdb.com/api/json/v1/1/filter.php?c=$category',
-      ),
-    );
-
-    if (response.statusCode != 200) {
-      print("Error getting categories.");
-      if (!mounted) return;
-      setState(() {
-        isLoading = false;
-      });
-
-      return;
-    }
-
-    final data = jsonDecode(response.body);
-    final meals = data["meals"] as List<dynamic>?;
-
-    if (meals != null) {
-      for (int i = 0; i < min(widget.amount, meals.length); i++) {
-        final currentRecipe = meals[i];
-        recipes.add({
-          "recipeName": currentRecipe["strMeal"],
-          "recipeImageLink": currentRecipe["strMealThumb"],
-        });
-      }
-      _recipesCache[category] = recipes;
-    }
-
-    if (!mounted) return;
-    setState(() {
-      isLoading = false;
-    });
-  }
+class RecipeTabs extends StatelessWidget {
+  const RecipeTabs({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    final state = Provider.of<RecipeState>(context);
+
+    if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (recipes.isEmpty) {
-      return const Center(child: Text("No recipes found."));
+    if (state.currentRecipes.isEmpty) {
+      return const Center(child: Text("No recipes found"));
     }
+
     return GridView.count(
       crossAxisCount: 3,
       padding: const EdgeInsets.all(8),
       crossAxisSpacing: 8,
       mainAxisSpacing: 8,
-      children: recipes.map((recipe) {
-        String recipeName = recipe["recipeName"]!;
+      children: state.currentRecipes.map((recipe) {
         return RecipeTab(
-          name: recipeName,
-          imageLink: recipe["recipeImageLink"]!,
-          onTap: widget.onTap,
-          onFavorite: () {
-            widget.onFavorite(recipeName);
-          },
-          isInitiallyLiked: widget.favorites.contains(recipeName),
+          name: recipe.name,
+          imageUrl: recipe.imageUrl,
+          isLiked: state.favorites.contains(recipe.name),
+          onTap: () {},
+          onFavorite: () => state.toggleFavorite(recipe.name),
         );
       }).toList(),
     );
