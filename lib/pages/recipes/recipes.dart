@@ -172,7 +172,7 @@ class _RecipesPage extends State<RecipesPage> {
                         ? Center(child: Text("History"))
                         : Column(
                             children: [
-                              for (var recipe in _history)
+                              for (var recipe in _history.reversed)
                                 Card(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
