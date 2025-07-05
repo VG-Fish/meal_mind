@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/short_recipe.dart';
+import '../../../models/full_recipe.dart';
 import '../../../services/local_storage.dart';
 
 import 'package:http/http.dart' as http;
@@ -13,7 +14,8 @@ class RecipeState extends ChangeNotifier {
   List<String> categories = ['All'];
   List<ShortRecipe> currentRecipes = [];
 
-  ShortRecipe? selectedRecipe;
+  ShortRecipe? selectedRecipeShort;
+  FullRecipe? selectedRecipeFull;
   bool isLoading = false;
   String currentCategory = 'All';
 
@@ -24,6 +26,18 @@ class RecipeState extends ChangeNotifier {
     loadFavorites();
     loadHistory();
     loadCategories();
+  }
+
+  Future<void> _fetchFullRecipe(ShortRecipe recipe) async {
+    String name = recipe.name;
+    final response = await http.get(
+      Uri.parse("https://www.themealdb.com/api/json/v1/1/search.php?s=$name"),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      selectedRecipeFull = FullRecipe.fromJson(data["meals"][0]);
+    }
+    notifyListeners();
   }
 
   Future<void> loadFavorites() async {
@@ -37,11 +51,11 @@ class RecipeState extends ChangeNotifier {
   }
 
   Future<void> loadCategories() async {
-    final res = await http.get(
+    final response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/categories.php'),
     );
-    if (res.statusCode == 200) {
-      final data = jsonDecode(res.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       categories = ['All'];
       categories.addAll(
         List<String>.from(
@@ -67,23 +81,23 @@ class RecipeState extends ChangeNotifier {
 
     if (currentCategory == "All") {
       for (int i = 0; i < amount; i++) {
-        final res = await http.get(
+        final response = await http.get(
           Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'),
         );
-        if (res.statusCode == 200) {
-          final data = jsonDecode(res.body);
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
           final meal = data['meals'][0];
           fetched.add(ShortRecipe.fromJson(meal));
         }
       }
     } else {
-      final res = await http.get(
+      final response = await http.get(
         Uri.parse(
           'https://www.themealdb.com/api/json/v1/1/filter.php?c=$currentCategory',
         ),
       );
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
         final meals = (data['meals'] as List).take(amount);
         fetched = meals
             .map<ShortRecipe>((meal) => ShortRecipe.fromJson(meal))
@@ -120,7 +134,8 @@ class RecipeState extends ChangeNotifier {
   }
 
   void selectRecipe(ShortRecipe recipe) {
-    selectedRecipe = recipe;
+    selectedRecipeShort = recipe;
+    _fetchFullRecipe(recipe);
     notifyListeners();
   }
 }

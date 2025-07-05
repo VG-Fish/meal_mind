@@ -1,4 +1,4 @@
-class ShortRecipe {
+class FullRecipe {
   final String name;
   final String imageUrl;
   final String instructions;
@@ -15,7 +15,7 @@ class ShortRecipe {
   final String? creativeCommonsConfirmed;
   final String? imageSource;
 
-  ShortRecipe({
+  FullRecipe({
     required this.name,
     required this.imageUrl,
     this.alternateName,
@@ -32,7 +32,7 @@ class ShortRecipe {
     this.imageSource,
   });
 
-  factory ShortRecipe.fromJson(Map<String, dynamic> json) {
+  factory FullRecipe.fromJson(Map<String, dynamic> json) {
     List<String> ingredients = [];
     List<String> measures = [];
 
@@ -58,10 +58,10 @@ class ShortRecipe {
       i++;
     }
 
-    return ShortRecipe(
+    return FullRecipe(
       name: json["strMeal"],
       imageUrl: json["strMealThumb"],
-      instructions: json["strInstruction"],
+      instructions: json["strInstructions"],
       ingredients: ingredients,
       measures: measures,
 
