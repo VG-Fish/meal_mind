@@ -14,6 +14,7 @@ class RecipeState extends ChangeNotifier {
   List<Recipe> currentRecipes = [];
   bool isLoading = false;
   String currentCategory = 'All';
+  final Map<String, List<Recipe>> _cache = {};
 
   final storage = ListLocalStorage();
 
@@ -48,6 +49,12 @@ class RecipeState extends ChangeNotifier {
   }
 
   Future<void> fetchRecipes(int amount) async {
+    if (_cache.containsKey(currentCategory)) {
+      currentRecipes = _cache[currentCategory]!;
+      notifyListeners();
+      return;
+    }
+
     isLoading = true;
     notifyListeners();
     List<Recipe> fetched = [];
@@ -76,6 +83,7 @@ class RecipeState extends ChangeNotifier {
       }
     }
 
+    _cache[currentCategory] = fetched;
     currentRecipes = fetched;
     isLoading = false;
     notifyListeners();
