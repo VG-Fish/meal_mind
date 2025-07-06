@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'pages/components/main_navigation.dart';
 import 'pages/recipes/state/recipe_state.dart';
+import 'pages/components/state/main_navigation_state.dart';
 
 void main() {
   runApp(const MealMind());
@@ -13,8 +14,11 @@ class MealMind extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => RecipeState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RecipeState()),
+        ChangeNotifierProvider(create: (_) => NavigationState()),
+      ],
       child: MaterialApp(
         title: "MealMind",
         theme: ThemeData(
