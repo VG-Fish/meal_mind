@@ -39,7 +39,7 @@ class RecipesPage extends StatelessWidget {
               ),
 
               const TabBar(
-                tabs: const [
+                tabs: [
                   Tab(text: "All Recipes"),
                   Tab(text: "Favorites"),
                   Tab(text: "History"),

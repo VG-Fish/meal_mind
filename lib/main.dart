@@ -18,6 +18,7 @@ class MealMind extends StatelessWidget {
       child: MaterialApp(
         title: "MealMind",
         theme: ThemeData(
+          canvasColor: const Color.fromARGB(255, 224, 222, 222),
           brightness: Brightness.light,
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: Colors.blue,
