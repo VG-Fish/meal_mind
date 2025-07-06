@@ -15,12 +15,6 @@ class CurrentPage extends StatelessWidget {
     final scrollController = ScrollController();
     final theme = Theme.of(context);
 
-    if (recipe != null) {
-      for (var r in recipe.ingredients) {
-        print(r);
-      }
-    }
-
     return Scaffold(
       backgroundColor: theme.canvasColor,
       body: SafeArea(

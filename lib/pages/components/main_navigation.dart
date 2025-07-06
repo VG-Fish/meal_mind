@@ -6,16 +6,12 @@ import '../current/current.dart';
 import '../recipes/recipes.dart';
 import '../social/social.dart';
 import '../today/today.dart';
+import 'state/main_navigation_state.dart';
 
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+class MainNavigation extends StatelessWidget {
+  MainNavigation({super.key});
 
-  @override
-  State<MainNavigation> createState() => _MainNavigationState();
-}
-
-class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
+  final navigationState = NavigationState();
 
   final List<Widget> _pages = [
     TodayPage(),
@@ -28,13 +24,14 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _pages),
+      body: IndexedStack(
+        index: navigationState.selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+        currentIndex: navigationState.selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          navigationState.selectedIndex = index;
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.today), label: "Today"),

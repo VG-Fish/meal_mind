@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/recipe_state.dart';
-
+import '../../components/state/main_navigation_state.dart';
 import 'recipe_tab.dart';
-import '../../current/current.dart';
 
 class RecipeTabs extends StatelessWidget {
   const RecipeTabs({super.key});
@@ -32,10 +31,8 @@ class RecipeTabs extends StatelessWidget {
           isLiked: state.favorites.contains(recipe.name),
           onTap: () {
             state.selectRecipe(recipe);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CurrentPage()),
-            );
+            Provider.of<NavigationState>(context, listen: false).selectedIndex =
+                1;
           },
           onFavorite: () => state.toggleFavorite(recipe.name),
         );

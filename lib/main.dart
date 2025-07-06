@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'pages/components/main_screen.dart';
+import 'pages/components/main_navigation.dart';
 import 'pages/recipes/state/recipe_state.dart';
 
 void main() {
