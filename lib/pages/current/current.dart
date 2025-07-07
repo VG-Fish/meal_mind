@@ -14,6 +14,7 @@ class CurrentPage extends StatefulWidget {
 
 class _CurrentPageState extends State<CurrentPage> {
   final ScrollController _scrollController = ScrollController();
+  bool _hasShownSnackBar = false;
 
   List<String> _addPositions(List<String> list) {
     List<String> result = [];
@@ -28,6 +29,9 @@ class _CurrentPageState extends State<CurrentPage> {
     super.didChangeDependencies();
 
     final recipeState = Provider.of<RecipeState>(context);
+    final recipe = recipeState.selectedRecipeFull;
+    final navigationState = Provider.of<NavigationState>(context);
+
     if (recipeState.selectedRecipeFull != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -37,6 +41,28 @@ class _CurrentPageState extends State<CurrentPage> {
             curve: Curves.easeInOut,
           );
         }
+      });
+    }
+
+    if (recipe != null &&
+        !recipeState.couldSelectRecipe &&
+        navigationState.selectedIndex == 1 &&
+        !_hasShownSnackBar) {
+      _hasShownSnackBar = true;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Could not find the recipe. Showing previous recipe.",
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Optional: reset the flag so the snackbar can show on future failures
+        recipeState.couldSelectRecipe = true;
       });
     }
   }
