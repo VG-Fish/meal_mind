@@ -141,6 +141,9 @@ class RecipeState extends ChangeNotifier {
 
   void selectRecipe(ShortRecipe recipe) {
     selectedRecipeShort = recipe;
+    couldSelectRecipe = true;
+    notifyListeners();
+
     _fetchFullRecipe(recipe);
     notifyListeners();
   }

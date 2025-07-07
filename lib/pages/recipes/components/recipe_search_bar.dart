@@ -15,8 +15,8 @@ class _RecipeSearchBarState extends State<RecipeSearchBar> {
   void _handleSubmit(String value) {
     if (value.trim().isEmpty) return;
 
-    widget.onSubmit(value); // Perform search
-    _controller.clear(); // Clear text field
+    widget.onSubmit(value);
+    _controller.clear();
   }
 
   @override

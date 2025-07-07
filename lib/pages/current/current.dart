@@ -5,8 +5,15 @@ import '../recipes/state/recipe_state.dart';
 import '../components/state/main_navigation_state.dart';
 import '../components/copyable_text_widget.dart';
 
-class CurrentPage extends StatelessWidget {
+class CurrentPage extends StatefulWidget {
   const CurrentPage({super.key});
+
+  @override
+  State<CurrentPage> createState() => _CurrentPageState();
+}
+
+class _CurrentPageState extends State<CurrentPage> {
+  final ScrollController _scrollController = ScrollController();
 
   List<String> _addPositions(List<String> list) {
     List<String> result = [];
@@ -17,12 +24,29 @@ class CurrentPage extends StatelessWidget {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final recipeState = Provider.of<RecipeState>(context);
+    if (recipeState.selectedRecipeFull != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final recipeState = Provider.of<RecipeState>(context);
     final navigationState = Provider.of<NavigationState>(context);
     final recipe = recipeState.selectedRecipeFull;
 
-    final scrollController = ScrollController();
     final theme = Theme.of(context);
     final Size size = MediaQuery.of(context).size;
 
@@ -50,10 +74,10 @@ class CurrentPage extends StatelessWidget {
                 ),
               )
             : Scrollbar(
-                controller: scrollController,
+                controller: _scrollController,
                 thumbVisibility: true,
                 child: SingleChildScrollView(
-                  controller: scrollController,
+                  controller: _scrollController,
                   padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: Column(
@@ -239,5 +263,11 @@ class CurrentPage extends StatelessWidget {
               ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
