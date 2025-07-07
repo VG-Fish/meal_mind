@@ -45,7 +45,9 @@ class _CurrentPageState extends State<CurrentPage> {
       });
     }
 
-    final currentRecipeName = recipeState.history.last;
+    final currentRecipeName = recipeState.history.isNotEmpty
+        ? recipeState.history.last
+        : "";
     if (_lastRecipeName != currentRecipeName) {
       _lastRecipeName = currentRecipeName;
       _hasShownSnackBar = false;
