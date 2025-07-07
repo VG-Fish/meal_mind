@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:meal_mind/models/short_recipe.dart';
 import 'package:meal_mind/pages/recipes/components/recipe_search_bar.dart';
 import 'package:provider/provider.dart';
 
 import 'state/recipe_state.dart';
 import 'components/recipe_tabs.dart';
 import '../components/copyable_text_widget.dart';
+import '../components/state/main_navigation_state.dart';
 
 class RecipesPage extends StatelessWidget {
   const RecipesPage({super.key});
@@ -34,6 +36,11 @@ class RecipesPage extends StatelessWidget {
                 child: RecipeSearchBar(
                   onSubmit: (recipe) {
                     state.addToHistory(recipe);
+                    state.selectRecipe(ShortRecipe(name: recipe));
+                    Provider.of<NavigationState>(
+                      context,
+                      listen: false,
+                    ).selectedIndex = 1;
                   },
                 ),
               ),
