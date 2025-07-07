@@ -16,6 +16,7 @@ class RecipeState extends ChangeNotifier {
 
   ShortRecipe? selectedRecipeShort;
   FullRecipe? selectedRecipeFull;
+  bool couldSelectRecipe = true;
   bool isLoading = false;
   String currentCategory = 'All';
 
@@ -35,7 +36,12 @@ class RecipeState extends ChangeNotifier {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      selectedRecipeFull = FullRecipe.fromJson(data["meals"][0]);
+      if (data != null && data["meals"] != null) {
+        couldSelectRecipe = true;
+        selectedRecipeFull = FullRecipe.fromJson(data["meals"][0]);
+      } else {
+        couldSelectRecipe = false;
+      }
     }
     notifyListeners();
   }

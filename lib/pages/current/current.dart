@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../recipes/state/recipe_state.dart';
+import '../components/state/main_navigation_state.dart';
 import '../components/copyable_text_widget.dart';
 
 class CurrentPage extends StatelessWidget {
@@ -17,12 +18,26 @@ class CurrentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<RecipeState>(context);
-    final recipe = state.selectedRecipeFull;
+    final recipeState = Provider.of<RecipeState>(context);
+    final navigationState = Provider.of<NavigationState>(context);
+    final recipe = recipeState.selectedRecipeFull;
 
     final scrollController = ScrollController();
     final theme = Theme.of(context);
     final Size size = MediaQuery.of(context).size;
+
+    if (recipe == null &&
+        !recipeState.couldSelectRecipe &&
+        navigationState.selectedIndex == 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Could not find the recipe."),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      });
+    }
 
     return Scaffold(
       backgroundColor: theme.canvasColor,

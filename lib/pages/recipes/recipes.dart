@@ -55,6 +55,7 @@ class RecipesPage extends StatelessWidget {
 
               const Divider(height: 1),
 
+              // Recipes Tab
               Expanded(
                 child: TabBarView(
                   children: [
