@@ -22,12 +22,11 @@ class MealMind extends StatelessWidget {
       child: MaterialApp(
         title: "MealMind",
         theme: ThemeData(
-          canvasColor: const Color.fromARGB(255, 224, 222, 222),
           brightness: Brightness.light,
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: Colors.blue,
             unselectedItemColor: Colors.grey,
-            backgroundColor: Colors.white,
+            backgroundColor: const Color.fromARGB(255, 142, 104, 104),
           ),
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         ),

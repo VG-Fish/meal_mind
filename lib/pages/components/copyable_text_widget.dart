@@ -4,11 +4,13 @@ import 'package:flutter/services.dart';
 class CopyableTextWidget extends StatelessWidget {
   final String text;
   final bool showCopyIcon;
+  final TextStyle style;
 
   const CopyableTextWidget({
     super.key,
     required this.text,
     this.showCopyIcon = true,
+    this.style = const TextStyle(fontSize: 18),
   });
 
   @override
@@ -18,7 +20,7 @@ class CopyableTextWidget extends StatelessWidget {
         Flexible(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: SelectableText(text, style: TextStyle(fontSize: 18)),
+            child: SelectableText(text, style: style),
           ),
         ),
         if (showCopyIcon)
