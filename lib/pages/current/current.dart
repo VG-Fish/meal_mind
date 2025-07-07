@@ -61,7 +61,6 @@ class _CurrentPageState extends State<CurrentPage> {
           ),
         );
 
-        // Optional: reset the flag so the snackbar can show on future failures
         recipeState.couldSelectRecipe = true;
       });
     }
