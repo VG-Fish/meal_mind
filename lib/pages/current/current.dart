@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meal_mind/models/full_recipe.dart';
 import 'package:provider/provider.dart';
 
 import '../recipes/state/recipe_state.dart';
@@ -17,48 +18,48 @@ class _CurrentPageState extends State<CurrentPage> {
   bool _hasShownSnackBar = false;
   String? _lastRecipeName;
 
-  List<String> _addPositions(List<String> list) {
-    List<String> result = [];
-    for (int i = 0; i < list.length; i++) {
-      result.add("${i + 1}. ${list[i]}");
-    }
-    return result;
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    final recipeState = Provider.of<RecipeState>(context);
+    final recipeState = context.read<RecipeState>();
+    final navigationState = context.read<NavigationState>();
     final recipe = recipeState.selectedRecipeFull;
-    final navigationState = Provider.of<NavigationState>(context);
 
-    if (recipeState.selectedRecipeFull != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            0,
-            duration: Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        }
-      });
-    }
+    _maybeResetSnackBarFlag(recipeState);
+    _maybeScrollToTop(recipe);
+    _maybeShowSnackBar(recipe, recipeState, navigationState);
+  }
 
-    final currentRecipeName = recipeState.history.isNotEmpty
-        ? recipeState.history.last
-        : "";
-    if (_lastRecipeName != currentRecipeName) {
-      _lastRecipeName = currentRecipeName;
+  void _maybeResetSnackBarFlag(RecipeState recipeState) {
+    final name = recipeState.history.isNotEmpty ? recipeState.history.last : "";
+    if (name != _lastRecipeName) {
+      _lastRecipeName = name;
       _hasShownSnackBar = false;
     }
+  }
 
+  void _maybeScrollToTop(dynamic recipe) {
+    if (recipe != null && _scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
+  }
+
+  void _maybeShowSnackBar(
+    FullRecipe? recipe,
+    RecipeState recipeState,
+    NavigationState navigationState,
+  ) {
     if (recipe != null &&
         !recipeState.couldSelectRecipe &&
         navigationState.selectedIndex == 1 &&
         !_hasShownSnackBar) {
       _hasShownSnackBar = true;
-
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,20 +70,78 @@ class _CurrentPageState extends State<CurrentPage> {
             duration: Duration(seconds: 2),
           ),
         );
-
         recipeState.couldSelectRecipe = true;
       });
     }
   }
 
+  Widget _titleCard(String text, {double fontSize = 20}) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
+      ),
+    ),
+  );
+
+  Widget _textCard(
+    String text, {
+    style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+  }) => Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(text, style: style),
+    ),
+  );
+
+  Widget _copyableCard(
+    String text, {
+    showCopyIcon = false,
+    style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+  }) => Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CopyableTextWidget(
+        text: text,
+        showCopyIcon: showCopyIcon,
+        style: style,
+      ),
+    ),
+  );
+
+  Widget _sectionCard(
+    String title,
+    String text,
+    Size size, {
+    style = const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+  }) => Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: style),
+          SizedBox(height: 8, width: size.width),
+          CopyableTextWidget(text: text, showCopyIcon: false),
+        ],
+      ),
+    ),
+  );
+
+  List<String> _addPositions(List<String> list) =>
+      List.generate(list.length, (i) => "${i + 1}. ${list[i]}");
+
   @override
   Widget build(BuildContext context) {
-    final recipeState = Provider.of<RecipeState>(context);
-    final navigationState = Provider.of<NavigationState>(context);
+    final recipeState = context.watch<RecipeState>();
+    final navigationState = context.watch<NavigationState>();
     final recipe = recipeState.selectedRecipeFull;
-
     final theme = Theme.of(context);
-    final Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
 
     if (recipe == null &&
         !recipeState.couldSelectRecipe &&
@@ -102,7 +161,7 @@ class _CurrentPageState extends State<CurrentPage> {
       backgroundColor: theme.canvasColor,
       body: SafeArea(
         child: recipe == null
-            ? Center(
+            ? const Center(
                 child: Text(
                   "No recipe selected",
                   style: TextStyle(fontSize: 50),
@@ -114,185 +173,41 @@ class _CurrentPageState extends State<CurrentPage> {
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Current Recipe",
-                              style: const TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
+                  child: Column(
+                    children: [
+                      _titleCard("Current Recipe", fontSize: 26),
 
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                        // Rounded image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(recipe.imageUrl, height: 320),
-                        ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(recipe.imageUrl, height: 320),
+                      ),
 
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                        // Recipe name
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CopyableTextWidget(
-                              text: recipe.name,
-                              showCopyIcon: false,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
+                      _copyableCard(recipe.name),
 
-                        // Alternative recipe name
-                        if (recipe.alternateName != "N/a")
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Alternative name: ${recipe.alternateName!}",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
+                      if (recipe.alternateName != "N/a")
+                        _textCard("Alternative name: ${recipe.alternateName}"),
 
-                        // Ingredients
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Ingredients",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 8, width: size.width),
-                                CopyableTextWidget(
-                                  text: _addPositions(
-                                    recipe.ingredients,
-                                  ).join("\n"),
-                                  showCopyIcon: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      _sectionCard(
+                        "Ingredients",
+                        _addPositions(recipe.ingredients).join("\n"),
+                        size,
+                      ),
+                      _sectionCard(
+                        "Measures",
+                        _addPositions(recipe.measures).join("\n"),
+                        size,
+                      ),
+                      _sectionCard("Instructions", recipe.instructions, size),
 
-                        // Measures
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Measures",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 8, width: size.width),
-                                CopyableTextWidget(
-                                  text: _addPositions(
-                                    recipe.measures,
-                                  ).join("\n"),
-                                  showCopyIcon: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // Instructions
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Instructions",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 8, width: size.width),
-                                CopyableTextWidget(
-                                  text: recipe.instructions,
-                                  showCopyIcon: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // Additional Information
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Additional Information:",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CopyableTextWidget(
-                              text:
-                                  "Area: ${recipe.area}\nCategory: ${recipe.category}\nYoutube Link: ${recipe.youtubeLink}",
-                              showCopyIcon: false,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      _textCard("Additional Information:"),
+                      _copyableCard(
+                        "Area: ${recipe.area}\nCategory: ${recipe.category}\nYoutube Link: ${recipe.youtubeLink}",
+                      ),
+                    ],
                   ),
                 ),
               ),
