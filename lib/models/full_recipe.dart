@@ -40,7 +40,7 @@ class FullRecipe {
     int i = 1;
     while (true) {
       String? currentIngredient = json["strIngredient$i"];
-      if (currentIngredient == null || currentIngredient == "") {
+      if (currentIngredient == null || currentIngredient.trim() == "") {
         break;
       }
       ingredients.add(currentIngredient);
@@ -51,7 +51,7 @@ class FullRecipe {
     i = 1;
     while (true) {
       String? currentMeasure = json["strMeasure$i"];
-      if (currentMeasure == null || currentMeasure == "") {
+      if (currentMeasure == null || currentMeasure.trim() == "") {
         break;
       }
       measures.add(currentMeasure);

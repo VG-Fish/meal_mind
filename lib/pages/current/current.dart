@@ -15,6 +15,7 @@ class CurrentPage extends StatefulWidget {
 class _CurrentPageState extends State<CurrentPage> {
   final ScrollController _scrollController = ScrollController();
   bool _hasShownSnackBar = false;
+  String? _lastRecipeName;
 
   List<String> _addPositions(List<String> list) {
     List<String> result = [];
@@ -42,6 +43,12 @@ class _CurrentPageState extends State<CurrentPage> {
           );
         }
       });
+    }
+
+    final currentRecipeName = recipeState.history.last;
+    if (_lastRecipeName != currentRecipeName) {
+      _lastRecipeName = currentRecipeName;
+      _hasShownSnackBar = false;
     }
 
     if (recipe != null &&
@@ -79,6 +86,7 @@ class _CurrentPageState extends State<CurrentPage> {
         !recipeState.couldSelectRecipe &&
         navigationState.selectedIndex == 1) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Could not find the recipe."),
